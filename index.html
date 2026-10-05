@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Properti</title>
+<title>Kalkulator Penyusutan Nilai Tanah (ZNT 2026)</title>
 <!-- ================= FAVICON ================= -->
 <link rel="icon" type="image/png" href="icon.png">
 
@@ -23,54 +23,54 @@
 <meta name="twitter:image" content="https://ekabudiku.github.io/kalkulator-penyusutan/kalkulator-penyusutan.jpg">
 
 <style>
-/* ================= NEUMORPHISM VARIABLES ================= */
+/* ================= NEUMORPHISM VARIABLES (STD DEV THEME) ================= */
 :root{
   --bg:#e0e5ec;
   --card-bg:#e0e5ec;
-  --text-color:#333;
+  --text-color:#2d3748;
 
-  --accent:#4c6ef5;
-  --accent-hover:#364fc7;
+  --accent:#800000;
+  --accent-hover:#5a0000;
 
-  --danger:#fa5252;
-  --danger-hover:#e03131;
+  --danger:#e53e3e;
+  --danger-hover:#c53030;
 
   --soft-shadow:
-    8px 8px 16px #b8bcc2,
-   -8px -8px 16px #ffffff;
+    9px 9px 16px #a3b1c6,
+   -9px -9px 16px #ffffff;
 
   --inset-shadow:
-    inset 6px 6px 12px #b8bcc2,
-    inset -6px -6px 12px #ffffff;
+    inset 6px 6px 10px #a3b1c6,
+    inset -6px -6px 10px #ffffff;
 
-  --success-bg:#d3f9d8;
-  --success-text:#2b8a3e;
+  --success-bg:#800000;
+  --success-text:#ffffff;
 
   --input-height:46px;
 }
 
 /* ================= DARK MODE ================= */
 body.dark{
-  --bg:#1e1e1e;
-  --card-bg:#1e1e1e;
+  --bg:#1a1818;
+  --card-bg:#1a1818;
   --text-color:#e5e5e5;
 
-  --accent:#74c0fc;
-  --accent-hover:#4dabf7;
+  --accent:#ff6b6b;
+  --accent-hover:#ff8787;
 
-  --danger:#ff8787;
-  --danger-hover:#fa5252;
+  --danger:#ff5252;
+  --danger-hover:#e03131;
 
   --soft-shadow:
-    8px 8px 16px #141414,
-   -8px -8px 16px #2a2a2a;
+    8px 8px 16px #111010,
+   -8px -8px 16px #232020;
 
   --inset-shadow:
-    inset 6px 6px 12px #141414,
-    inset -6px -6px 12px #2a2a2a;
+    inset 5px 5px 10px #111010,
+    inset -5px -5px 10px #232020;
 
-  --success-bg:#2b8a3e;
-  --success-text:#d3f9d8;
+  --success-bg:#a00000;
+  --success-text:#ffffff;
 }
 
 /* ================= BASE ================= */
@@ -100,6 +100,15 @@ body{
   margin-bottom:2rem;
 }
 
+.company-title{
+  color:var(--accent);
+  font-weight:bold;
+  letter-spacing:1px;
+  font-size:0.9rem;
+  margin-bottom:0.3rem;
+  text-transform:uppercase;
+}
+
 .topbar{
   position:absolute;
   top:1rem;
@@ -118,8 +127,6 @@ body{
 }
 
 /* ================= FORM CONTAINER ================= */
-
-/* DEFAULT → 1 SAMPEL CENTER */
 #formContainer{
   display:flex;
   justify-content:center;
@@ -128,7 +135,6 @@ body{
   width:100%;
 }
 
-/* Jika ada >1 sampel → grid */
 #formContainer:has(.sampel:nth-child(2)){
   display:grid;
   grid-template-columns:1fr;
@@ -147,6 +153,9 @@ body{
   width:100%;
   max-width:100%;
   box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  height:100%;
 }
 
 .sampel h3,
@@ -182,6 +191,25 @@ select{
 input:focus,
 select:focus{
   outline:none;
+  background-color:var(--card-bg) !important;
+}
+
+input[type="text"],
+input[type="number"],
+select{
+  background-color:var(--card-bg) !important;
+  color:var(--text-color);
+}
+
+/* Chrome autofill override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active{
+  -webkit-box-shadow:0 0 0 1000px var(--card-bg) inset !important;
+  -webkit-text-fill-color:var(--text-color) !important;
+  transition:background-color 5000s ease-in-out 0s;
+  border-radius:14px;
 }
 
 /* ================= BUTTON ================= */
@@ -225,6 +253,7 @@ button.main-btn:hover{
   border-radius:14px;
   box-shadow:var(--soft-shadow);
   cursor:pointer;
+  font-weight:600;
 }
 
 /* ================= RESULT ================= */
@@ -232,32 +261,32 @@ button.main-btn:hover{
   display:grid;
   grid-template-columns:1fr;
   gap:1.5rem;
+  align-items:stretch;
   width:100%;
 }
 
 .result-line{
   display:flex;
   justify-content:space-between;
-  align-items:center;        /* FIX vertical alignment */
+  align-items:center;
   gap:1rem;
+  margin-bottom:0.4rem;
 }
 
 .result-line strong{
-  white-space:nowrap;        /* FIX: Rp + angka satu baris */
+  white-space:nowrap;
   text-align:right;
-  flex-shrink:0;             /* FIX: tidak dipaksa mengecil */
+  flex-shrink:0;
 }
 
 .result-final{
-  margin-top:1rem;
+  margin-top:auto;
   padding:1rem;
   border-radius:18px;
   background:var(--success-bg);
   color:var(--success-text);
   box-shadow:var(--soft-shadow);
-  grid-column:1/-1;
-
-  display:flex;                 /* FIX layout */
+  display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
@@ -268,13 +297,59 @@ button.main-btn:hover{
 .result-final .value{
   font-size:1.4rem;
   font-weight:bold;
-  white-space:nowrap;           /* FIX: Rp + angka satu baris */
-  font-variant-numeric: tabular-nums; /* angka rata profesional */
+  white-space:nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-/* ================= TABLET ================= */
-@media (min-width:768px){
+.result-final.rsd-high {
+  background: var(--danger);
+  color: #ffffff;
+}
 
+body.dark .result-final.rsd-high {
+  color: #ffffff;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+  text-align:center;
+  margin-top:3rem;
+  margin-bottom:2rem;
+  display:flex;
+  justify-content:center;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+
+.insta-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0.75rem 1.4rem;
+  background:var(--card-bg);
+  color:var(--text-color);
+  text-decoration:none;
+  font-weight:600;
+  font-size:0.9rem;
+  border-radius:50px;
+  box-shadow:var(--soft-shadow);
+  transition:all 0.2s ease-in-out;
+}
+
+.insta-btn:hover{
+  box-shadow:var(--inset-shadow);
+  color:var(--accent);
+  transform:translateY(2px);
+}
+
+.insta-btn svg{
+  width:18px;
+  height:18px;
+  fill:currentColor;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (min-width:768px){
   .sampel,
   .result{
     max-width:520px;
@@ -294,9 +369,7 @@ button.main-btn:hover{
   }
 }
 
-/* ================= DESKTOP BESAR ================= */
 @media (min-width:1200px){
-
   #formContainer{
     max-width:1100px;
     margin-left:auto;
@@ -307,100 +380,6 @@ button.main-btn:hover{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
 }
-
-/* ================= FOOTER ================= */
-.footer{
-  text-align:center;
-  margin-top:3rem;
-  margin-bottom:2rem;
-  display:flex;
-  justify-content:center;
-}
-
-.insta-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:0.8rem 1.5rem;
-  background:var(--card-bg);
-  color:var(--text-color);
-  text-decoration:none;
-  font-weight:600;
-  font-size:0.95rem;
-  border-radius:50px;
-  box-shadow:var(--soft-shadow);
-  transition:all 0.2s ease-in-out;
-}
-
-.insta-btn:hover{
-  box-shadow:var(--inset-shadow);
-  color:var(--accent);
-  transform:translateY(2px);
-}
-
-.insta-btn svg{
-  width:20px;
-  height:20px;
-  fill:currentColor;
-}
-
-/* ================= FIX INPUT PUTIH SETELAH KETIK ================= */
-input[type="text"],
-input[type="number"],
-select{
-  background-color:var(--card-bg) !important;
-  color:var(--text-color);
-}
-
-/* Chrome autofill override */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active{
-  -webkit-box-shadow:0 0 0 1000px var(--card-bg) inset !important;
-  -webkit-text-fill-color:var(--text-color) !important;
-  transition:background-color 5000s ease-in-out 0s;
-  border-radius:14px;
-}
-
-/* Saat input aktif (setelah ketik) */
-input:focus{
-  background-color:var(--card-bg) !important;
-}
-
-/* ================= FIX TINGGI CARD HASIL ================= */
-.result{
-  display:flex;
-  flex-direction:column;
-  height:100%;
-}
-
-.result-final{
-  margin-top:auto;
-}
-
-#output{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:1.5rem;
-  align-items:stretch;
-}
-
-@media (min-width:768px){
-  #output{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-/* ================= WARNA ALERT RSD (TAMBAHAN BARU) ================= */
-.result-final.rsd-high {
-  background: var(--danger);
-  color: #ffffff;
-}
-
-body.dark .result-final.rsd-high {
-  color: #1e1e1e;
-}
 </style>
 </head>
 
@@ -410,9 +389,9 @@ body.dark .result-final.rsd-high {
     <div class="topbar">
       <button id="darkModeToggle" onclick="toggleDarkMode()">🌙</button>
     </div>
+    <div class="company-title">PT JADE KARYA TRINUSA</div>
     <h2>KALKULATOR PENYUSUTAN (ZNT 2026)</h2>
     
-    <!-- TAMBAHAN: Opsi Pemilihan Skala Project -->
     <label style="margin-top: 1.5rem; display: block; color: var(--accent);">Pilih Skala Project ZNT</label>
     <select id="skalaProject" onchange="hitungMulti()" style="max-width: 300px; margin: 0 auto; text-align: center; cursor: pointer;">
       <option value="15">Skala 1:2.500 (Max 15%)</option>
@@ -431,16 +410,30 @@ body.dark .result-final.rsd-high {
   <div id="output"></div>
   
   <div class="footer">
-    <a href="https://instagram.com/ekabudiku" target="_blank" class="insta-btn" aria-label="Instagram Ekabudiku">
+    <a href="https://instagram.com/hasanasdllh" 
+       target="_blank" 
+       class="insta-btn"
+       aria-label="Instagram Hasan Asdullah">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.01 4 20 5.99 20 7.75v8.5C20 18.01 18.01 20 16.25 20h-8.5C5.99 20 4 18.01 4 16.25v-8.5C4 5.99 5.99 4 7.75 4zm4.25 2.5A5.75 5.75 0 006.25 12 5.75 5.75 0 0012 17.75 5.75 5.75 0 0017.75 12 5.75 5.75 0 0012 6.5zm0 2A3.75 3.75 0 0115.75 12 3.75 3.75 0 0112 15.75 3.75 3.75 0 018.25 12 3.75 3.75 0 0112 8.5zm5.5-3.75a1.25 1.25 0 100 2.5 1.25 1.25 0 000-2.5z"/>
       </svg>
-      @ekabudiku
+      @hasanasdllh
+    </a>
+
+    <a href="https://instagram.com/dheadeviana_" 
+       target="_blank" 
+       class="insta-btn"
+       aria-label="Instagram Dhea Deviana">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.01 4 20 5.99 20 7.75v8.5C20 18.01 18.01 20 16.25 20h-8.5C5.99 20 4 18.01 4 16.25v-8.5C4 5.99 5.99 4 7.75 4zm4.25 2.5A5.75 5.75 0 006.25 12 5.75 5.75 0 0012 17.75 5.75 5.75 0 0012 6.5zm0 2A3.75 3.75 0 0115.75 12 3.75 3.75 0 0112 15.75 3.75 3.75 0 018.25 12 3.75 3.75 0 0112 8.5zm5.5-3.75a1.25 1.25 0 100 2.5 1.25 1.25 0 000-2.5z"/>
+      </svg>
+      @dheadeviana_
     </a>
   </div>
+  
   <p style="text-align: center; font-size: 0.75rem; color: var(--text-color); opacity: 0.6; margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-  *Unofficial Tool. Berdasarkan digitalisasi template Excel ZNT BPN. Gunakan sebagai alat bantu bantu dan verifikasi kembali hasil perhitungan Anda.
-</p>
+    *Unofficial Tool. Berdasarkan digitalisasi template Excel ZNT BPN. Gunakan sebagai alat bantu dan verifikasi kembali hasil perhitungan Anda.
+  </p>
 </div>
 
 <script>
@@ -486,10 +479,10 @@ function formatRupiah(el){
   el.value=v?new Intl.NumberFormat('id-ID').format(v):'';
 }
 function formatMoney(num) {
-    return "Rp " + Math.round(num).toLocaleString('id-ID');
+  return "Rp " + Math.round(num).toLocaleString('id-ID');
 }
 function formatPct(num) {
-    return "(" + (num * 100).toFixed(2) + "%)";
+  return "(" + (num * 100).toFixed(2) + "%)";
 }
 
 let counterSampel=0;
